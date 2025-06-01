@@ -1,11 +1,9 @@
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import ChartComponent from "./components/Chart.jsx";
 function App() {
   return (
     <>
-      <div className="bg-gray-600 text-white text-400 text-2xl font-bold p-4">
-        App
-      </div>
+      <ChartComponent />
     </>
   );
 }
