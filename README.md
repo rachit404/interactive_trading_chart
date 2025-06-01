@@ -2,6 +2,18 @@
 
 This project is an interactive chart that visualizes historical trading data of BTC/USDT from Binance using `Chart.js`. The chart allows users to view and draw trendlines on the candlestick chart, which represents the open, high, low, and close prices of BTC/USDT over a given time interval.
 
+## Contents
+
+- [Project Setup](#project-setup)
+  - [Prerequisites](#prerequisites)
+  - [Install Dependencies](#install-dependencies)
+  - [Running Locally](#running-locally)
+- [Dependencies](#dependencies)
+- [Approach & Assumptions](#approach-assumptions)
+- [How to Use](#how-to-use)
+- [Notes](#notes)
+- [Troubleshooting](#troubleshooting)
+
 ## Project Setup
 
 ### Prerequisites
@@ -63,12 +75,16 @@ Here is a list of the main dependencies used in this project:
    - Users can also drag and adjust the trendlines after drawing them.
    - Delete all trendlines with a single button click.
 
-4. **Data Interval & Limit:**
+4. **LocalStorage:**
+
+   - Refreshing page does not reset trendlines. Uses local storage of browser to save data.
+
+5. **Data Interval & Limit:**
 
    - Users can change the interval (e.g., 1 day, 1 hour) and the limit (the number of data points to fetch) through input fields.
    - After setting the desired interval and limit, users can click the "Go" button to fetch data and update the chart.
 
-5. **Responsive UI:**
+6. **Responsive UI:**
    - Tailwind CSS is used for styling the UI, making it responsive and mobile-friendly.
 
 ## How to Use
@@ -92,6 +108,10 @@ Here is a list of the main dependencies used in this project:
 5. **Reset Trendlines:**
 
    - Click the **Reset Trendlines** button to remove all drawn trendlines.
+
+6. **Log Trendline Coordinates:**
+
+   - Double-click any trendline to log its coordinates to the console.
 
 ## Notes
 
