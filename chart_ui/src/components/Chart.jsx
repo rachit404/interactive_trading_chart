@@ -296,7 +296,6 @@ const ChartComponent = () => {
       <h1 className="text-3xl font-bold text-gray-800 mb-6">
         Interactive Trading Chart
       </h1>
-
       <div className="flex flex-col md:flex-row items-start md:items-center gap-4 p-4 bg-gray-100 rounded-lg shadow-md">
         {/* Interval Input */}
         <div className="flex flex-col">
