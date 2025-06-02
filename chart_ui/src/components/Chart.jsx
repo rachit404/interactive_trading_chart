@@ -16,6 +16,7 @@ import {
   CandlestickController,
   CandlestickElement,
 } from "chartjs-chart-financial";
+import { set } from "date-fns";
 
 Chart.register(
   TimeScale,
@@ -39,6 +40,8 @@ const ChartComponent = () => {
   const [dragging, setDragging] = useState(null);
   const [hoveredPoint, setHoveredPoint] = useState(null);
   const [callAPI, setCallAPI] = useState(false);
+  const [selectedIndex, setSelectedIndex] = useState(null);
+  const [displayType, setDisplayType] = useState(true);
 
   const getDataCoordinates = (event, chartInstance) => {
     const rect = canvasRef.current.getBoundingClientRect();
@@ -60,6 +63,95 @@ const ChartComponent = () => {
     setTrendlines([]); // Clear previous trendlines
   };
 
+  // const handleDoubleClick = (event) => {
+  //   const chartInstance = Chart.getChart(canvasRef.current);
+  //   const { x, y } = getDataCoordinates(event, chartInstance);
+  //   const hitRadius = 10;
+  //   setTrendlines((prev) =>
+  //     prev.filter(
+  //       (item) =>
+  //         !(
+  //           item.start.x === x &&
+  //           item.start.y === y &&
+  //           item.end.x === x &&
+  //           item.end.y === y
+  //         )
+  //     )
+  //   );
+
+  //   let clickedIndex = null;
+
+  //   for (let i = 0; i < trendlines.length; i++) {
+  //     const { start, end } = trendlines[i];
+  //     const distToStart = Math.hypot(x - start.x, y - start.y);
+  //     const distToEnd = Math.hypot(x - end.x, y - end.y);
+
+  //     if (distToStart < hitRadius || distToEnd < hitRadius) {
+  //       clickedIndex = i;
+  //       break;
+  //     }
+  //   }
+
+  //   if (clickedIndex !== null) {
+  //     setSelectedIndex(clickedIndex);
+  //     const { start, end } = trendlines[clickedIndex];
+  //     const formatTimestamp = (ts) => new Date(ts).toLocaleString();
+  //     console.log("✅ Selected Index:", clickedIndex);
+  //     console.log("🟢 Trendline:", {
+  //       Start: { time: formatTimestamp(start.x), price: start.y },
+  //       End: { time: formatTimestamp(end.x), price: end.y },
+  //     });
+  //   } else {
+  //     setSelectedIndex(null);
+  //     console.log("❌ No trendline selected");
+  //   }
+  // };
+
+  const handleDoubleClick = (event) => {
+    const chartInstance = Chart.getChart(canvasRef.current);
+    const { x, y } = getDataCoordinates(event, chartInstance);
+    const hitRadius = 10;
+
+    let clickedIndex = null;
+
+    // Iterate over current trendlines to find closest one
+    trendlines.forEach((line, index) => {
+      const distToStart = Math.hypot(x - line.start.x, y - line.start.y);
+      const distToEnd = Math.hypot(x - line.end.x, y - line.end.y);
+
+      if (distToStart < hitRadius || distToEnd < hitRadius) {
+        clickedIndex = index;
+      }
+    });
+
+    if (clickedIndex !== null) {
+      const clickedLine = trendlines[clickedIndex];
+
+      // Optional: Remove the clicked trendline on double-click
+      setTrendlines((prev) => prev.filter((_, i) => i !== clickedIndex));
+      setSelectedIndex(null);
+
+      // Format and log coordinates
+      const formatTimestamp = (ts) => new Date(ts).toLocaleString();
+      const start = clickedLine.start;
+      const end = clickedLine.end;
+
+      console.log("🟠 Double-clicked Trendline:");
+      console.log("  ▶ Start:", {
+        x: start.x,
+        time: formatTimestamp(start.x),
+        y: start.y,
+      });
+      console.log("  ▶ End:", {
+        x: end.x,
+        time: formatTimestamp(end.x),
+        y: end.y,
+      });
+    } else {
+      console.log("❌ No trendline matched for deletion");
+    }
+  };
+
   const handleCanvasClick = (event) => {
     const chartInstance = Chart.getChart(canvasRef.current);
     const { x, y } = getDataCoordinates(event, chartInstance);
@@ -73,49 +165,52 @@ const ChartComponent = () => {
     }
   };
 
-  const handleDoubleClick = (event) => {
-    const chartInstance = Chart.getChart(canvasRef.current);
-    const { x, y } = getDataCoordinates(event, chartInstance);
-    const hitRadius = 10;
-    setTrendlines((prev) =>
-      prev.filter(
-        (item) =>
-          !(
-            item.start.x === x &&
-            item.start.y === y &&
-            item.end.x === x &&
-            item.end.y === y
-          )
-      )
-    );
+  // const handleDoubleClick = (event) => {
+  //   const chartInstance = Chart.getChart(canvasRef.current);
+  //   const { x, y } = getDataCoordinates(event, chartInstance);
+  //   const hitRadius = 10;
+  //   setTrendlines((prev) =>
+  //     prev.filter(
+  //       (item) =>
+  //         !(
+  //           item.start.x === x &&
+  //           item.start.y === y &&
+  //           item.end.x === x &&
+  //           item.end.y === y
+  //         )
+  //     )
+  //   );
 
-    for (let i = 0; i < trendlines.length; i++) {
-      const { start, end } = trendlines[i];
+  //   for (let i = 0; i < trendlines.length; i++) {
+  //     const { start, end } = trendlines[i];
 
-      const distToStart = Math.hypot(x - start.x, y - start.y);
-      const distToEnd = Math.hypot(x - end.x, y - end.y);
+  //     const distToStart = Math.hypot(x - start.x, y - start.y);
+  //     const distToEnd = Math.hypot(x - end.x, y - end.y);
 
-      if (distToStart < hitRadius || distToEnd < hitRadius) {
-        const formatTimestamp = (ts) => {
-          const d = new Date(ts);
-          return d.toLocaleString();
-        };
+  //     if (distToStart < hitRadius || distToEnd < hitRadius) {
+  //       const formatTimestamp = (ts) => {
+  //         const d = new Date(ts);
+  //         return d.toLocaleString();
+  //       };
 
-        const startTime = formatTimestamp(start.x);
-        const endTime = formatTimestamp(end.x);
+  //       const startTime = formatTimestamp(start.x);
+  //       const endTime = formatTimestamp(end.x);
+  //       setSelectedIndex(i);
+  //       console.log(
+  //         "🟩 Trendline Coordinates:\nStart →",
+  //         { time: startTime, price: start.y },
+  //         "\nEnd   →",
+  //         { time: endTime, price: end.y }
+  //       );
 
-        console.log("🟩 Trendline Coordinates:");
-        console.log("Start →", { time: startTime, price: start.y });
-        console.log("End   →", { time: endTime, price: end.y });
+  //       // alert(
+  //       //   `Trendline:\nStart → ${startTime}, $${start.y}\nEnd → ${endTime}, $${end.y}`
+  //       // );
 
-        // alert(
-        //   `Trendline:\nStart → ${startTime}, $${start.y}\nEnd → ${endTime}, $${end.y}`
-        // );
-
-        break;
-      }
-    }
-  };
+  //       break;
+  //     }
+  //   }
+  // };
 
   const handleMouseDown = (event) => {
     const chartInstance = Chart.getChart(canvasRef.current);
@@ -186,7 +281,7 @@ const ChartComponent = () => {
     };
     loadData();
     setCallAPI(false);
-  }, [callAPI]);
+  }, [callAPI, displayType]);
 
   useEffect(() => {
     if (!canvasRef.current || data.length === 0) return;
@@ -282,6 +377,7 @@ const ChartComponent = () => {
     canvas.addEventListener("mousemove", handleMouseMove);
     canvas.addEventListener("mouseup", handleMouseUp);
     canvas.addEventListener("dblclick", handleDoubleClick);
+
     return () => {
       canvas.removeEventListener("click", handleCanvasClick);
       canvas.removeEventListener("mousedown", handleMouseDown);
@@ -296,12 +392,12 @@ const ChartComponent = () => {
       <h1 className="text-3xl font-bold text-gray-800 mb-6">
         Interactive Trading Chart
       </h1>
-      <div className="flex flex-col md:flex-row items-start md:items-center gap-4 p-4 bg-gray-100 rounded-lg shadow-md">
+      <div className="flex flex-col md:flex-row md:items-end items-start gap-4 p-6 bg-gray-50 rounded-xl shadow-lg border border-gray-200">
         {/* Interval Input */}
-        <div className="flex flex-col">
+        <div className="flex flex-col w-full md:w-auto">
           <label
             htmlFor="interval"
-            className="mb-1 text-sm font-medium text-gray-700"
+            className="mb-1 text-sm font-medium text-gray-800"
           >
             Interval
           </label>
@@ -311,15 +407,15 @@ const ChartComponent = () => {
             value={interval}
             onChange={(e) => setInterval(e.target.value)}
             placeholder="e.g., 1d, 1h"
-            className="border border-gray-300 rounded px-3 py-2 w-full md:w-32"
+            className="border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none rounded-md px-3 py-2 w-full md:w-36 text-sm"
           />
         </div>
 
         {/* Limit Input */}
-        <div className="flex flex-col">
+        <div className="flex flex-col w-full md:w-auto">
           <label
             htmlFor="limit"
-            className="mb-1 text-sm font-medium text-gray-700"
+            className="mb-1 text-sm font-medium text-gray-800"
           >
             Limit
           </label>
@@ -329,28 +425,62 @@ const ChartComponent = () => {
             value={limit}
             onChange={(e) => setLimit(Number(e.target.value))}
             placeholder="e.g., 20"
-            className="border border-gray-300 rounded px-3 py-2 w-full md:w-20"
+            className="border border-gray-300 focus:ring-2 focus:ring-blue-500 focus:outline-none rounded-md px-3 py-2 w-full md:w-24 text-sm"
           />
         </div>
 
+        {/* Go Button */}
         <button
           onClick={handleGo}
-          className="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-4 py-2 rounded shadow transition"
+          className="bg-white border border-blue-600 text-blue-600 hover:bg-blue-600 hover:text-white font-semibold px-5 py-2.5 rounded-md shadow-sm transition-colors duration-300 text-sm"
         >
           Go
         </button>
+
+        {/* Toggle Display Button */}
+        <button
+          onClick={() => setDisplayType(!displayType)}
+          className="bg-white border border-pink-600 text-pink-600 hover:bg-pink-600 hover:text-white font-semibold px-5 py-2.5 rounded-md shadow-sm transition-colors duration-300 text-sm"
+        >
+          {displayType ? "Table" : "Chart"}
+        </button>
       </div>
-      <Table data={data} />
-      <h2 className="text-2xl font-semibold mb-4">Click to draw trendlines</h2>
-      <button
-        onClick={() => setTrendlines([])}
-        className="bg-red-500 hover:bg-red-600 text-white font-semibold py-2 px-4 rounded-lg shadow-md transition duration-300 mb-6"
-      >
-        Reset TrendLines
-      </button>
-      <div className="relative w-[95%] h-[800px] mb-8 bg-gray-100 rounded shadow flex items-center justify-center border-2 border-gray-300">
-        <canvas className="p-4" ref={canvasRef}></canvas>
-      </div>
+
+      {displayType ? (
+        <>
+          <h2 className="pt-5 text-2xl font-semibold mb-4">
+            Click to draw trendlines
+          </h2>
+          <div className="flex justify-between w-[95%] mb-4">
+            {trendlines.length == 0 ? null : (
+              <>
+                <button
+                  type="button"
+                  onClick={() => setTrendlines([])}
+                  className="bg-white border border-teal-600 text-teal-600 hover:bg-teal-500 hover:text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 mb-4"
+                >
+                  Reset TrendLines
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setTrendlines((prev) => prev.slice(0, -1));
+                  }}
+                  className="bg-white border border-red-600 text-red-600 hover:bg-red-600 hover:text-white font-semibold py-2 px-4 rounded-lg shadow-md transition-colors duration-300 mb-4"
+                >
+                  Delete Last
+                </button>
+              </>
+            )}
+          </div>
+
+          <div className="relative w-[95%] h-[800px] mb-8 bg-gray-100 rounded shadow flex items-center justify-center border-2 border-gray-300">
+            <canvas className="p-4" ref={canvasRef}></canvas>
+          </div>
+        </>
+      ) : (
+        <Table data={data} />
+      )}
     </div>
   );
 };
