@@ -63,50 +63,6 @@ const ChartComponent = () => {
     setTrendlines([]); // Clear previous trendlines
   };
 
-  // const handleDoubleClick = (event) => {
-  //   const chartInstance = Chart.getChart(canvasRef.current);
-  //   const { x, y } = getDataCoordinates(event, chartInstance);
-  //   const hitRadius = 10;
-  //   setTrendlines((prev) =>
-  //     prev.filter(
-  //       (item) =>
-  //         !(
-  //           item.start.x === x &&
-  //           item.start.y === y &&
-  //           item.end.x === x &&
-  //           item.end.y === y
-  //         )
-  //     )
-  //   );
-
-  //   let clickedIndex = null;
-
-  //   for (let i = 0; i < trendlines.length; i++) {
-  //     const { start, end } = trendlines[i];
-  //     const distToStart = Math.hypot(x - start.x, y - start.y);
-  //     const distToEnd = Math.hypot(x - end.x, y - end.y);
-
-  //     if (distToStart < hitRadius || distToEnd < hitRadius) {
-  //       clickedIndex = i;
-  //       break;
-  //     }
-  //   }
-
-  //   if (clickedIndex !== null) {
-  //     setSelectedIndex(clickedIndex);
-  //     const { start, end } = trendlines[clickedIndex];
-  //     const formatTimestamp = (ts) => new Date(ts).toLocaleString();
-  //     console.log("✅ Selected Index:", clickedIndex);
-  //     console.log("🟢 Trendline:", {
-  //       Start: { time: formatTimestamp(start.x), price: start.y },
-  //       End: { time: formatTimestamp(end.x), price: end.y },
-  //     });
-  //   } else {
-  //     setSelectedIndex(null);
-  //     console.log("❌ No trendline selected");
-  //   }
-  // };
-
   const handleDoubleClick = (event) => {
     const chartInstance = Chart.getChart(canvasRef.current);
     const { x, y } = getDataCoordinates(event, chartInstance);
@@ -136,17 +92,20 @@ const ChartComponent = () => {
       const start = clickedLine.start;
       const end = clickedLine.end;
 
-      console.log("🟠 Double-clicked Trendline:");
-      console.log("  ▶ Start:", {
-        x: start.x,
-        time: formatTimestamp(start.x),
-        y: start.y,
-      });
-      console.log("  ▶ End:", {
-        x: end.x,
-        time: formatTimestamp(end.x),
-        y: end.y,
-      });
+      console.log(
+        "Double-clicked Trendline:\n Start:",
+        {
+          x: start.x,
+          time: formatTimestamp(start.x),
+          y: start.y,
+        },
+        "\n End:",
+        {
+          x: end.x,
+          time: formatTimestamp(end.x),
+          y: end.y,
+        }
+      );
     } else {
       console.log("❌ No trendline matched for deletion");
     }
@@ -164,53 +123,6 @@ const ChartComponent = () => {
       setClicks([{ x, y }]);
     }
   };
-
-  // const handleDoubleClick = (event) => {
-  //   const chartInstance = Chart.getChart(canvasRef.current);
-  //   const { x, y } = getDataCoordinates(event, chartInstance);
-  //   const hitRadius = 10;
-  //   setTrendlines((prev) =>
-  //     prev.filter(
-  //       (item) =>
-  //         !(
-  //           item.start.x === x &&
-  //           item.start.y === y &&
-  //           item.end.x === x &&
-  //           item.end.y === y
-  //         )
-  //     )
-  //   );
-
-  //   for (let i = 0; i < trendlines.length; i++) {
-  //     const { start, end } = trendlines[i];
-
-  //     const distToStart = Math.hypot(x - start.x, y - start.y);
-  //     const distToEnd = Math.hypot(x - end.x, y - end.y);
-
-  //     if (distToStart < hitRadius || distToEnd < hitRadius) {
-  //       const formatTimestamp = (ts) => {
-  //         const d = new Date(ts);
-  //         return d.toLocaleString();
-  //       };
-
-  //       const startTime = formatTimestamp(start.x);
-  //       const endTime = formatTimestamp(end.x);
-  //       setSelectedIndex(i);
-  //       console.log(
-  //         "🟩 Trendline Coordinates:\nStart →",
-  //         { time: startTime, price: start.y },
-  //         "\nEnd   →",
-  //         { time: endTime, price: end.y }
-  //       );
-
-  //       // alert(
-  //       //   `Trendline:\nStart → ${startTime}, $${start.y}\nEnd → ${endTime}, $${end.y}`
-  //       // );
-
-  //       break;
-  //     }
-  //   }
-  // };
 
   const handleMouseDown = (event) => {
     const chartInstance = Chart.getChart(canvasRef.current);
@@ -368,7 +280,7 @@ const ChartComponent = () => {
       plugins: [trendlinePlugin],
     });
     return () => chart.destroy();
-  }, [data, trendlines]);
+  }, [data, trendlines, displayType]);
 
   useEffect(() => {
     const canvas = canvasRef.current;
