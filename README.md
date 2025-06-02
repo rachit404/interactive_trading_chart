@@ -9,7 +9,7 @@ This project is an interactive chart that visualizes historical trading data of 
   - [Install Dependencies](#install-dependencies)
   - [Running Locally](#running-locally)
 - [Dependencies](#dependencies)
-- [Approach & Assumptions](#approach-assumptions)
+- [Approach and Assumptions](#approach-and-assumptions)
 - [How to Use](#how-to-use)
 - [Notes](#notes)
 - [Troubleshooting](#troubleshooting)
@@ -58,7 +58,7 @@ Here is a list of the main dependencies used in this project:
 - `react-dom`: React's package for DOM-specific methods.
 - `tailwindcss`: Utility-first CSS framework for rapid UI development.
 
-## Approach & Assumptions
+## Approach and Assumptions
 
 1. **Binance Data Fetching:**
 
@@ -68,6 +68,7 @@ Here is a list of the main dependencies used in this project:
 
    - We use `chart.js` for rendering a candlestick chart and displaying the BTC/USDT price data.
    - The `chartjs-chart-financial` plugin is used to render candlestick charts, while `chartjs-plugin-annotation` is used to allow users to draw trendlines on the chart.
+   - Multiple `eventListener` added for better interaction with the canvas chart.
 
 3. **Interactive Trendlines:**
 
